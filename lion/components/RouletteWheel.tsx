@@ -204,10 +204,14 @@ export default function RouletteWheel({ isSpinning, onSpinComplete }: RouletteWh
     if (t < 1) {
       animationRef.current = requestAnimationFrame(animate);
     } else {
+      audioEngine.stopBGM();
       audioEngine.playLandingTick();
       const winner = getWinnerIndex(currentAngle);
       isSpinningRef.current = false;
-      setTimeout(() => onSpinComplete(winner), 400);
+      setTimeout(() => {
+        audioEngine.playFanfare();
+        onSpinComplete(winner);
+      }, 400);
     }
   }, [drawWheel, onSpinComplete]);
 
@@ -216,6 +220,7 @@ export default function RouletteWheel({ isSpinning, onSpinComplete }: RouletteWh
     if (isSpinning && !isSpinningRef.current) {
       isSpinningRef.current = true;
       audioEngine.resume();
+      audioEngine.startBGM();
 
       const state = createSpinState(currentAngleRef.current);
       physicsRef.current = state;
